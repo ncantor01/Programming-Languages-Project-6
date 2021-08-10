@@ -1,0 +1,91 @@
+CMSC 22100 Summer 2020
+Problem Set 6
+
+Problem Set 6 is due Tues, Aug 11 at 11:59pm CDT.
+
+The PS6 language builds a whole language upon the type grammar from
+PS5.
+
+t ::= const
+    | (some t)
+    | (none T)
+    | (% t t)       // unwrap
+    | (ref t)       // create ref cell
+    | (read t)      // read from ref cell
+    | (:= t t)      // write to ref cell
+    | (pair t t)
+    | (#1 t)
+    | (#2 t)
+    | (inl t T)            // left of sum
+    | (inr T t)            // right of sum
+    | (case t [x t] [x t]) // sum elimination
+    | (^x:T.t)
+    | x
+    | (@ t t)            // application
+    | (<l=t> ... <l=t>)  // records
+    | (#l t)             // record selection
+
+const ::= $name/T
+
+T ::= Ground
+    | (? T)
+    | (! T)
+    | (* T T)
+    | (+ T T)
+    | (-> T T)
+    | (<l:T> ... <l:T>)
+
+There is a scanner and parser provided for easy testing. You need to
+implement type checking, including type environments, and
+duplicate-label checking for record terms and record types. You do not
+need to write an evaluator for this problem set, since you have
+written many evaluators already and this one would not differ
+substantially from those.
+
+Even though we use the type grammar from the subtyping assignment,
+subtyping plays no role in this problem set.
+
+The forms in the grammars above ought to be self-explanatory. The
+following PS6 quirks are worth highlighting:
+
+- A constant of a particular ground type is written, for example,
+
+  $a/A
+
+  This is a constant name "a" of type "A". There are no built-in
+  constants at all; you can invent them on the fly using this
+  syntax. If you wanted to write the boolean constant true, for
+  example, you could write
+
+  $true/Bool
+
+  You can write as many constants as you like of a particular type:
+
+  $t1/T
+  $t2/T
+
+  etc.
+
+- For the write expression (:= t1 t2), make sure that t1 is of type
+  (! tau1) and t2 is of type tau1 (the same tau1), and give the whole
+  expression the type (! tau1). This differs from the typing of :=
+  operations in SML, which are of type unit.
+
+- In none, the option type is given to identify which kind of "none"
+  it is. Aa bool option "(? Bool)" should be written "(none Bool)" (as
+  opposed to "(none (? Bool))", which would be a bool option option).
+
+- Similarly, inl and inr both carry "the other type" along with
+  them. So "(inl $a/A B)" and "(inr A $b/B)" are both of type (+ A B).
+
+- Follow what the text says about the typing of case statements. The
+  branches should have the same type as one another, and checking the
+  expressions in the branches involves extending the type environment.
+
+- Note that application is marked with an @ for ease of parsing.
+
+If you run into any issues scanning or parsing constants, record
+labels, variable names, or anything else, you might first consult the
+scanner and parser, since you have them in your possession.
+
+Any other questions, please let us know.
